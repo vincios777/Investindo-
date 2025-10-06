@@ -80,3 +80,233 @@ Contato
 		(11) 9999-9999
 		São Paulo, SP
 © 2023 InvestFinder. Todos os direitos reservados.
+        // Base de dados de investimentos
+        const investmentsData = [
+            {
+                id: 1,
+                name: "Tesouro Selic 2026",
+                type: "renda_fixa",
+                typeLabel: "Renda Fixa",
+                risk: 1,
+                liquidity: "diaria",
+                minValue: 100,
+                expectedReturn: "100% CDI",
+                returnValue: 10.5,
+                description: "Título do Tesouro Direto pós-fixado, ideal para reserva de emergência.",
+                rating: 4.8
+            },
+            {
+                id: 2,
+                name: "FII MXRF11",
+                type: "fii",
+                typeLabel: "FII",
+                risk: 2,
+                liquidity: "diaria",
+                minValue: 80,
+                expectedReturn: "8-10% ao ano",
+                returnValue: 9,
+                description: "Fundos de Recebíveis Imobiliários com bons dividendos mensais.",
+                rating: 4.5
+            },
+            {
+                id: 3,
+                name: "PETR4 - Petrobras",
+                type: "acoes",
+                typeLabel: "Ações",
+                risk: 4,
+                liquidity: "diaria",
+                minValue: 150,
+                expectedReturn: "Variável + Dividendos",
+                returnValue: 15,
+                description: "Ação da Petrobras com histórico de bons dividendos.",
+                rating: 4.2
+            },
+            {
+                id: 4,
+                name: "BOVA11 - ETF Ibovespa",
+                type: "etf",
+                typeLabel: "ETF",
+                risk: 3,
+                liquidity: "diaria",
+                minValue: 100,
+                expectedReturn: "Acompanha Ibovespa",
+                returnValue: 12,
+                description: "ETF que replica o desempenho do índice Ibovespa.",
+                rating: 4.3
+            },
+            {
+                id: 5,
+                name: "CDB Banco Inter 110% CDI",
+                type: "renda_fixa",
+                typeLabel: "Renda Fixa",
+                risk: 2,
+                liquidity: "diaria",
+                minValue: 1000,
+                expectedReturn: "110% CDI",
+                returnValue: 11.5,
+                description: "CDB com liquidez diária e retorno acima do CDI.",
+                rating: 4.6
+            },
+            {
+                id: 6,
+                name: "FII HGLG11",
+                type: "fii",
+                typeLabel: "FII",
+                risk: 3,
+                liquidity: "diaria",
+                minValue: 120,
+                expectedReturn: "7-9% ao ano",
+                returnValue: 8,
+                description: "FII de galpões logísticos, setor em crescimento.",
+                rating: 4.4
+            },
+            {
+                id: 7,
+                name: "VALE3 - Vale S.A.",
+                type: "acoes",
+                typeLabel: "Ações",
+                risk: 4,
+                liquidity: "diaria",
+                minValue: 85,
+                expectedReturn: "Variável + Dividendos",
+                returnValue: 14,
+                description: "Ação da Vale, uma das maiores mineradoras do mundo.",
+                rating: 4.1
+            },
+            {
+                id: 8,
+                name: "Bitcoin",
+                type: "cripto",
+                typeLabel: "Cripto",
+                risk: 5,
+                liquidity: "diaria",
+                minValue: 50,
+                expectedReturn: "Altamente Volátil",
+                returnValue: 25,
+                description: "Principal criptomoeda do mercado.",
+                rating: 3.9
+            }
+        ];
+
+        // Função para calcular o investimento necessário
+        function calculateInvestment() {
+            const monthlyIncome = parseInt(document.getElementById("monthlyIncome").value);
+            const years = parseInt(document.getElementById("investmentTime").value);
+            
+            // Cálculo simplificado usando a regra do 4%
+            const requiredAmount = monthlyIncome * 12 / 0.04;
+            const monthlyInvestment = requiredAmount / (years * 12);
+            
+            document.getElementById("incomeValue").textContent = monthlyIncome.toLocaleString("pt-BR");
+            document.getElementById("requiredAmount").textContent = Math.round(requiredAmount).toLocaleString("pt-BR");
+            document.getElementById("monthlyInvestment").textContent = Math.round(monthlyInvestment).toLocaleString("pt-BR");
+            document.getElementById("years").textContent = years;
+            
+            document.getElementById("result").style.display = "block";
+        }
+
+        // Função para buscar investimentos
+        function searchInvestments() {
+            // Obter filtros
+            const typeFilter = document.getElementById("investmentType").value;
+            const riskFilter = document.getElementById("riskLevel").value;
+            const liquidityFilter = document.getElementById("liquidity").value;
+            const minInvestmentFilter = document.getElementById("minInvestment").value;
+            const expectedReturnFilter = document.getElementById("expectedReturn").value;
+            const ratingFilter = document.getElementById("rating").value;
+
+            // Filtrar investimentos
+            const filteredInvestments = investmentsData.filter(investment => {
+                return (
+                    (!typeFilter || investment.type === typeFilter) &&
+                    (!riskFilter || investment.risk == riskFilter) &&
+                    (!liquidityFilter || investment.liquidity === liquidityFilter) &&
+                    (!minInvestmentFilter || investment.minValue <= parseInt(minInvestmentFilter)) &&
+                    (!expectedReturnFilter || investment.returnValue <= parseInt(expectedReturnFilter)) &&
+                    (!ratingFilter || investment.rating >= parseFloat(ratingFilter))
+                );
+            });
+
+            displayResults(filteredInvestments);
+        }
+
+        // Função para exibir resultados
+        function displayResults(investments) {
+            const resultsGrid = document.getElementById("resultsGrid");
+            const resultsCount = document.getElementById("resultsCount");
+            
+            resultsCount.textContent = `${investments.length} investimento(s) encontrado(s)`;
+            
+            if (investments.length === 0) {
+                resultsGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                        <h3>Nenhum investimento encontrado</h3>
+                        <p>Tente ajustar os filtros da sua busca.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            resultsGrid.innerHTML = investments.map(investment => `
+                <div class="investment-card">
+                    <div class="card-header">
+                        <div class="investment-name">${investment.name}</div>
+                        <div class="investment-type">${investment.typeLabel}</div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="investment-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Risco:</span>
+                                <span class="detail-value">${investment.risk}/5</span>
+                            </div>
+                            <div class="risk-bar">
+                                <div class="risk-${investment.risk}"></div>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Retorno Esperado:</span>
+                                <span class="detail-value return-${investment.risk <= 2 ? "good" : investment.risk <= 3 ? "medium" : ""}">${investment.expectedReturn}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Invest. Mínimo:</span>
+                                <span class="detail-value">R$ ${investment.minValue}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Liquidez:</span>
+                                <span class="detail-value">${getLiquidityLabel(investment.liquidity)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Avaliação:</span>
+                                <span class="detail-value">⭐ ${investment.rating}</span>
+                            </div>
+                        </div>
+                        
+                        <p style="color: #666; font-size: 0.9rem;">${investment.description}</p>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <button class="btn" style="background: #f0f0f0;">Comparar</button>
+                        <button class="btn btn-primary">Ver Detalhes</button>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        // Função auxiliar para obter o label de liquidez
+        function getLiquidityLabel(liquidity) {
+            const labels = {
+                "diaria": "Diária",
+                "30dias": "30 dias",
+                "90dias": "90 dias",
+                "1ano": "1 ano",
+                "longo": "Longo Prazo"
+            };
+            return labels[liquidity] || liquidity;
+        }
+
+        // Inicializar a exibição de resultados ao carregar a página
+        window.addEventListener("load", () => {
+            displayResults(investmentsData);
+            calculateInvestment();
+        });
+    
